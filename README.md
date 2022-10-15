@@ -2,7 +2,6 @@
 
 # Проект Mesto бэкенд
 
-```
 ## Запуск проекта
 
 `npm run start` — запускает сервер
@@ -11,4 +10,3 @@
 ## Ссылка на репозиторий
 
 https://github.com/Ales-fox/express-mesto-gha.git
-```
