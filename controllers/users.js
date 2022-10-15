@@ -13,7 +13,7 @@ module.exports.getUser = (req, res) => {
     .then((users) => res.send({ users }))
     .catch((err) => {
       if (err.message === 'NotFound') {
-        return res.status(404).send({ message: 'Пользователь не найден' });
+        return res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
       }
       if (err.name === 'CastError') {
         return res.status(400).send({ message: 'Некорректный id' });
@@ -39,19 +39,18 @@ module.exports.createUser = (req, res) => {
 module.exports.correctUser = (req, res) => {
   const { name, about } = req.body;
 
-  User.findByIdAndUpdate(req.params.userId, { name, about }, {
+  User.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true, // данные будут валидированы перед изменением
-    upsert: true, // если пользователь не найден, он будет создан
   }).orFail(new Error('NotFound'))
     .populate('name')
-    .then((users) => res.send({ users }))
+    .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Ошибка валидации:', err });
       }
       if (err.message === 'NotFound') {
-        return res.status(404).send({ message: 'Пользователь не найден' });
+        return res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
       }
       if (err.name === 'CastError') {
         return res.status(400).send({ message: 'Некорректный id' });
@@ -71,7 +70,7 @@ module.exports.correctAvatar = (req, res) => {
     .then((users) => res.send({ users }))
     .catch((err) => {
       if (err.message === 'NotFound') {
-        return res.status(404).send({ message: 'Пользователь не найден' });
+        return res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
       }
       if (err.name === 'CastError') {
         return res.status(400).send({ message: 'Некорректный id' });
