@@ -44,7 +44,7 @@ module.exports.correctUser = (req, res) => {
     runValidators: true, // данные будут валидированы перед изменением
   }).orFail(new Error('NotFound'))
     .populate('name')
-    .then((user) => res.send({ user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Ошибка валидации:', err });
