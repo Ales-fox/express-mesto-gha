@@ -1,8 +1,8 @@
 {
   "name": "mesto-express-gha",
-  "author": "",
+  "author": "Делибалт Александра",
   "version": "1.0.0",
-  "description": "",
+  "description": "Простенький бэк",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon app.js",
@@ -29,5 +29,7 @@
     "eslint-plugin-import": "^2.26.0",
     "nodemon": "^2.0.20"
   },
-  "extends": "eslint: recommended"
+  "eslintConfig": {
+    "extends": "eslint: recommended"
+  }
 }
