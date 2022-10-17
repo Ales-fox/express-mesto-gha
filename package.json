@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon app.js",
     "start": "node app.js",
-    "lint": "npx eslint"
+    "lint": "npx eslint package.json"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
     "mongoose": "^6.6.5"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.19.1",
     "eslint": "^8.25.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
