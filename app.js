@@ -46,7 +46,6 @@ app.use(router);
 // Ошибка на неизвестные роуты
 app.use('*', (req, res, next) => {
   next(new ResourseExistError (errorMessage.resourseExistError))
-  //res.status(404).send({ message: 'Запрашиваемый ресурс не найден ' });
 });
 
 // Обработчик ошибок celebrate

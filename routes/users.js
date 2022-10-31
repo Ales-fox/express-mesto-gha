@@ -3,7 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 
 const {
   getUsers,
-  /*getUser,*/
+  getUser,
   getMyInfo,
   correctUser,
   correctAvatar,
@@ -11,28 +11,28 @@ const {
 
 router.get('/', getUsers);
 
-/*router.get('/:userId',celebrate ({
-  params: Joi.object().keys({
-    cardId: Joi.string().required().id(),
+router.get('/:userId',celebrate ({
+  body: Joi.object().keys({
+    _id: Joi.string().required().id(),
   }).unknown(true),
-}), getUser);*/
+}), getUser);
 
 router.get('/me', celebrate ({
   body: Joi.object().keys({
-    _id: Joi.string().required(),
+    _id: Joi.string().required().id(),
   }).unknown(true),
 }), getMyInfo);
 
 router.patch('/me',celebrate ({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(40),
-    about: Joi.string().required().min(2),
+    about: Joi.string().required().min(2).max(30),
   }).unknown(true),
 }), correctUser);
 
 router.patch('/me/avatar',celebrate ({
   body: Joi.object().keys({
-    avatar: Joi.string().required().min(4) //.regex() или RegExp ?
+    avatar: Joi.string().required().min(4).pattern(/(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+\.(ru|com)))(:\d{2,5})?((\/.+)+)?\/?#?/), //.regex() или RegExp ?
   }).unknown(true),
 }), correctAvatar);
 

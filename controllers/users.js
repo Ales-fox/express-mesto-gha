@@ -13,11 +13,15 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
-/*module.exports.getUser = (req, res, next) => {
+module.exports.getUser = (req, res, next) => {
   console.log(req);
-  User.findById(req.params.userId).orFail(new NotFoundError(errorMessage.notFoundUser))
+  User.findById(req.user._id).orFail(new NotFoundError(errorMessage.notFoundUser))
     .populate('name')
-    .then((user) => res.send({ user }))
+    .then((user) => {
+      if (!user) {
+        return next(new NotFoundError(errorMessage.notFoundUser));
+      }
+      res.send({ user })})
     .catch((err) => {
       if (err.message === 'NotFound') {
         next(new NotFoundError(errorMessage.notFoundUser));
@@ -27,7 +31,7 @@ module.exports.getUsers = (req, res, next) => {
       }
     next(err);
     });
-};*/
+};
 
 module.exports.getMyInfo = (req, res, next) => {
   console.log(req.user._id);
