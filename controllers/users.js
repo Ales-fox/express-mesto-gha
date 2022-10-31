@@ -1,6 +1,7 @@
 const User = require('../models/user'); // Модуль для хеширования пароля
 const jwt = require('jsonwebtoken'); // Модуль для создания токенов
 const {errorMessage, SECRET_JWT} = require('../constants');
+const bcrypt = require('bcryptjs');
 const NotFoundError = require('../errors/NotFoundError');
 const CastError = require('../errors/CastError');
 const ValidError = require('../errors/ValidError');
@@ -45,10 +46,10 @@ module.exports.getMyInfo = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  const { name, about, avatar, email, password } = req.body;
+  const { email, password, name, about, avatar  } = req.body;
 
   bcrypt.hash(password, 10) //Хэшируем пароль, 10 - длина "соли"
-    .then(hash => User.create({ name, about, avatar, email, password: hash }))
+    .then(hash => User.create({ email, password: hash, name, about, avatar  }))
     .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -63,7 +64,7 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.correctUser = (req, res, next) => {
   const { name, about } = req.body;
-console.log(name);
+
   User.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true, // данные будут валидированы перед изменением
