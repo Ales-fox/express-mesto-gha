@@ -10,9 +10,7 @@ module.exports.getUsers = (req, res, next) => {
   console.log(req.params);
   User.find({_id: user._id})
     .then((users) => res.send({ users }))
-    .catch(next
-      //(err) => res.status(500).send({ message: err.message })
-      );
+    .catch(next);
 };
 
 module.exports.getUser = (req, res, next) => {
@@ -23,15 +21,11 @@ module.exports.getUser = (req, res, next) => {
     .catch((err) => {
       if (err.message === 'NotFound') {
         next(new NotFoundError(errorMessage.notFoundUser));
-        //return res.status(404).send({ message: errorMessage.notFoundUser });
       }
       if (err.name === 'CastError') {
         next(new CastError(errorMessage.castError));
-        //return res.status(400).send({ message: errorMessage.castError });
       }
     next(err);
-      //return res.status(500).send({ message: err.message });
-
     });
 };
 
@@ -59,13 +53,11 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidError(`${errorMessage.validationError} ${err}`))
-        //return res.status(400).send({ message: errorMessage.validationError, err });
       }
       if (err.code === 11000) {
         next(new EmailExistError(errorMessage.emailExistError));
       }
       next(err);
-      //res.status(500).send({ message: err.message });
     });
 };
 
@@ -133,17 +125,11 @@ module.exports.login = (req, res, next) => {
       console.log('успешно!');
       const token = jwt.sign({ _id: user._id }, SECRET_JWT, { expiresIn: '7d' }); // в течение недели токен будет действителен
 
-      /*res.cookie('jwt', token, {
-        maxAge: 3600000,
-        httpOnly: true,
-        sameSite: true // Запрос посылается только c того же домена
-      });*/
-
       res.status(200).send({ token });
     })
     .catch((err) => {
       const error = new Error(errorMessage.jwtError);
-      err.statusCode = 401;
+      error.statusCode = 401;
       next(error);
     });
 };

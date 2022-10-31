@@ -23,7 +23,7 @@ app.post('/signin',celebrate ({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(7),
-  }).unknown(true),
+  }).unknown(), // дефолтное значение  true
 }), login);
 
 app.post('/signup',celebrate ({
@@ -33,7 +33,7 @@ app.post('/signup',celebrate ({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().uri(), //url валидация ?
-  }).unknown(true),
+  }).unknown(),
 }), createUser);
 
 // авторизация
