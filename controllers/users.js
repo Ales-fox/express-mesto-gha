@@ -8,13 +8,12 @@ const ValidError = require('../errors/ValidError');
 const EmailExistError = require('../errors/EmailExistError');
 
 module.exports.getUsers = (req, res, next) => {
-  console.log(req.params);
-  User.find({_id: user._id})
+  User.find({})
     .then((users) => res.send({ users }))
     .catch(next);
 };
 
-module.exports.getUser = (req, res, next) => {
+/*module.exports.getUser = (req, res, next) => {
   console.log(req);
   User.findById(req.params.userId).orFail(new NotFoundError(errorMessage.notFoundUser))
     .populate('name')
@@ -28,7 +27,7 @@ module.exports.getUser = (req, res, next) => {
       }
     next(err);
     });
-};
+};*/
 
 module.exports.getMyInfo = (req, res, next) => {
   console.log(req.user._id);
@@ -50,7 +49,7 @@ module.exports.createUser = (req, res, next) => {
 
   bcrypt.hash(password, 10) //Хэшируем пароль, 10 - длина "соли"
     .then(hash => User.create({ email, password: hash, name, about, avatar  }))
-    .then((user) => res.send({ user }))
+    .then((user) => res.status(200).send({ user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidError(`${errorMessage.validationError} ${err}`))

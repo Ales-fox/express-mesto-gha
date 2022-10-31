@@ -3,7 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 
 const {
   getUsers,
-  getUser,
+  /*getUser,*/
   getMyInfo,
   correctUser,
   correctAvatar,
@@ -11,15 +11,15 @@ const {
 
 router.get('/', getUsers);
 
-router.get('/:userId',celebrate ({
+/*router.get('/:userId',celebrate ({
   params: Joi.object().keys({
     cardId: Joi.string().required().id(),
   }).unknown(true),
-}), getUser);
+}), getUser);*/
 
 router.get('/me', celebrate ({
   body: Joi.object().keys({
-    _id: Joi.string().required().id(),
+    _id: Joi.string().required(),
   }).unknown(true),
 }), getMyInfo);
 
