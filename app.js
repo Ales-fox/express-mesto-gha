@@ -23,6 +23,9 @@ app.post('/signin',celebrate ({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(7),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().uri(),
   }).unknown(), // дефолтное значение  true
 }), login);
 
@@ -32,8 +35,8 @@ app.post('/signup',celebrate ({
     password: Joi.string().required().min(7),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().uri(), //url валидация ?
-  }).unknown(),
+    avatar: Joi.string().pattern(/(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+\.(ru|com)))(:\d{2,5})?((\/.+)+)?\/?#?/), //url валидация ?
+  }).unknown(true),
 }), createUser);
 
 // авторизация
