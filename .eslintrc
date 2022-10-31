@@ -16,7 +16,7 @@
       "sourceType": "module",
       "requireConfigFile": false
   },
-  
+
   "rules": {
 	"no-underscore-dangle": [
 		"error",
@@ -25,6 +25,7 @@
 		}
 	],
 	"no-console": "off",
-    "semi": [2, "always"]
+  "semi": [2, "always"],
+  "allowAllPropertiesOnSameLine": true
 	}
 }

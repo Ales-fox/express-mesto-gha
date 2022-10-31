@@ -1,44 +1,77 @@
-const User = require('../models/user');
-const errorMessage = require('../constants');
+const User = require('../models/user'); // Модуль для хеширования пароля
+const jwt = require('jsonwebtoken'); // Модуль для создания токенов
+const {errorMessage, SECRET_JWT} = require('../constants');
+const NotFoundError = require('../errors/NotFoundError');
+const CastError = require('../errors/CastError');
+const ValidError = require('../errors/ValidError');
+const EmailExistError = require('../errors/EmailExistError');
 
-module.exports.getUsers = (req, res) => {
-  User.find({})
+module.exports.getUsers = (req, res, next) => {
+  console.log(req.params);
+  User.find({_id: user._id})
     .then((users) => res.send({ users }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next
+      //(err) => res.status(500).send({ message: err.message })
+      );
 };
 
-module.exports.getUser = (req, res) => {
-  User.findById(req.params.userId).orFail(new Error('NotFound'))
+module.exports.getUser = (req, res, next) => {
+  console.log(req);
+  User.findById(req.params.userId).orFail(new NotFoundError(errorMessage.notFoundUser))
     .populate('name')
-    .then((users) => res.send({ users }))
+    .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.message === 'NotFound') {
-        return res.status(404).send({ message: errorMessage.notFoundUser });
+        next(new NotFoundError(errorMessage.notFoundUser));
+        //return res.status(404).send({ message: errorMessage.notFoundUser });
       }
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: errorMessage.castError });
+        next(new CastError(errorMessage.castError));
+        //return res.status(400).send({ message: errorMessage.castError });
       }
-      return res.status(500).send({ message: err.message });
+    next(err);
+      //return res.status(500).send({ message: err.message });
+
     });
 };
 
-module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
+module.exports.getMyInfo = (req, res, next) => {
+  console.log(req.user._id);
+  User.findById(req.user._id).orFail(new Error('NotFound'))
+    .then((myInfo) => res.send({ myInfo }))
+    .catch((err) => {
+      if (err.message === 'NotFound') {
+        next(new NotFoundError(errorMessage.notFoundUser));
+      }
+      if (err.name === 'CastError') {
+        next(new CastError(errorMessage.castError));
+      }
+    next(err);
+    });
+};
 
-  User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
+module.exports.createUser = (req, res, next) => {
+  const { name, about, avatar, email, password } = req.body;
+
+  bcrypt.hash(password, 10) //Хэшируем пароль, 10 - длина "соли"
+    .then(hash => User.create({ name, about, avatar, email, password: hash }))
+    .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: errorMessage.validationError, err });
-        return;
+        next(new ValidError(`${errorMessage.validationError} ${err}`))
+        //return res.status(400).send({ message: errorMessage.validationError, err });
       }
-      res.status(500).send({ message: err.message });
+      if (err.code === 11000) {
+        next(new EmailExistError(errorMessage.emailExistError));
+      }
+      next(err);
+      //res.status(500).send({ message: err.message });
     });
 };
 
-module.exports.correctUser = (req, res) => {
+module.exports.correctUser = (req, res, next) => {
   const { name, about } = req.body;
-
+console.log(name);
   User.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true, // данные будут валидированы перед изменением
@@ -46,19 +79,23 @@ module.exports.correctUser = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: errorMessage.validationError, err });
+        next(new ValidError(`${errorMessage.validationError} ${err}`))
+        //return res.status(400).send({ message: errorMessage.validationError, err });
       }
       if (err.message === 'NotFound') {
-        return res.status(404).send({ message: errorMessage.notFoundUser });
+        next(new NotFoundError(errorMessage.notFoundUser));
+        //return res.status(404).send({ message: errorMessage.notFoundUser });
       }
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: errorMessage.castError });
+        next(new CastError(errorMessage.castError));
+        //return res.status(400).send({ message: errorMessage.castError });
       }
-      return res.status(500).send({ message: err.message });
+      next(err);
+      //return res.status(500).send({ message: err.message });
     });
 };
 
-module.exports.correctAvatar = (req, res) => {
+module.exports.correctAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, {
@@ -68,14 +105,45 @@ module.exports.correctAvatar = (req, res) => {
     .then((users) => res.send({ users }))
     .catch((err) => {
       if (err.message === 'NotFound') {
-        return res.status(404).send({ message: errorMessage.notFoundUser });
+        next(new NotFoundError(errorMessage.notFoundUser));
+        //return res.status(404).send({ message: errorMessage.notFoundUser });
       }
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: errorMessage.castError });
+        next(new CastError(errorMessage.castError));
+        //return res.status(400).send({ message: errorMessage.castError });
       }
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: errorMessage.validationError, err });
+        next(new ValidError(`${errorMessage.validationError} ${err}`))
+        //return res.status(400).send({ message: errorMessage.validationError, err });
       }
-      return res.status(500).send({ message: err.message });
+      next(err);
+      //return res.status(500).send({ message: err.message });
+    });
+};
+
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+  if ( !email || !password ) {
+    return res.status(400).send({ message: 'Password or email empty' });
+  }
+
+  User.findUserByCredentials(email, password)
+    .then((user) => {
+      // аутентификация успешна
+      console.log('успешно!');
+      const token = jwt.sign({ _id: user._id }, SECRET_JWT, { expiresIn: '7d' }); // в течение недели токен будет действителен
+
+      /*res.cookie('jwt', token, {
+        maxAge: 3600000,
+        httpOnly: true,
+        sameSite: true // Запрос посылается только c того же домена
+      });*/
+
+      res.status(200).send({ token });
+    })
+    .catch((err) => {
+      const error = new Error(errorMessage.jwtError);
+      err.statusCode = 401;
+      next(error);
     });
 };
