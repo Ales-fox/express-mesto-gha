@@ -11,17 +11,18 @@ const {
 
 router.get('/', getUsers);
 
+router.get('/me', celebrate ({
+  body: Joi.object().keys({
+    _id: Joi.string().required().id().alphanum(),
+  }).unknown(true),
+}), getMyInfo);
+
 router.get('/:userId',celebrate ({
   body: Joi.object().keys({
     _id: Joi.string().required().id().alphanum(),
   }).unknown(true),
 }), getUser);
 
-router.get('/me', celebrate ({
-  body: Joi.object().keys({
-    _id: Joi.string().required().id().alphanum(),
-  }).unknown(true),
-}), getMyInfo);
 
 router.patch('/me',celebrate ({
   body: Joi.object().keys({

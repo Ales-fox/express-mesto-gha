@@ -18,7 +18,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (!card) {
         next(new NotFoundError(errorMessage.notFoundCard))
       }
-      if (card.owner.toString()!==req.user._id) {
+      if (card.owner.toHexString()!==req.user._id) {
         next(new ForbiddenError(errorMessage.forbiddenError));
       }
       res.send({ data: card })})

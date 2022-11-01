@@ -34,7 +34,7 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.getMyInfo = (req, res, next) => {
-  console.log(req.user._id);
+  //console.log(req.user._id);
   User.findById(req.user._id).orFail(new Error('NotFound'))
     .then((myInfo) => res.send({ myInfo }))
     .catch((err) => {
