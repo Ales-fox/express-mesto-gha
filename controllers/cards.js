@@ -16,10 +16,10 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId).orFail(new Error('NotFound'))// При отсутствии подходящего id создает ошибку и кидает в блок catch
     .then((card) => {
       if (!card) {
-        next(new NotFoundError(errorMessage.notFoundCard))
+        return next(new NotFoundError(errorMessage.notFoundCard));
       }
       if (card.owner.toHexString()!==req.user._id) {
-        next(new ForbiddenError(errorMessage.forbiddenError));
+        return next(new ForbiddenError(errorMessage.forbiddenError));
       }
       res.send({ data: card })})
     .catch((err) => {
