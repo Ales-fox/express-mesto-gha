@@ -6,7 +6,7 @@ const router = require('./routes/index');
 const {  login,  createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const errorMessage = require('./constants');
-const ResourseExistError = require('./errors/ResourseExistError');
+const NotFoundError = require('./errors/NotFoundError');
 
 const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
 // Подключение базы данных
@@ -45,7 +45,7 @@ app.use(auth);
 app.use(router);
 // Ошибка на неизвестные роуты
 app.use('*', (req, res, next) => {
-  next(new ResourseExistError (errorMessage.resourseExistError))
+  next(new NotFoundError(errorMessage.resourseExistError));
 });
 
 // Обработчик ошибок celebrate

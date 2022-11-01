@@ -19,7 +19,7 @@ module.exports.getUser = (req, res, next) => {
     .populate('name')
     .then((user) => {
       if (!user) {
-        return next(new NotFoundError(errorMessage.notFoundUser));
+        next(new NotFoundError(errorMessage.notFoundUser));
       }
       res.send({ user })})
     .catch((err) => {

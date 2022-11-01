@@ -5,7 +5,8 @@ const errorMessage = {
   validationError: 'Ошибка валидации:',
   jwtError: 'Отсутствие/некорректный токена/токен',
   emailExistError: 'Пользователь с таким email уже зарегестрирован',
-  resourseExistError:'Запрашиваемый ресурс не найден '
+  resourseExistError:'Запрашиваемый ресурс не найден ',
+  forbiddenError: 'Доступ к запрошеному ресурсу запрещен'
 };
 const SECRET_JWT = 'some-secret-key';
 
