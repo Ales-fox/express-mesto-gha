@@ -12,7 +12,7 @@ module.exports.getCards = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId).orFail(new Error('NotFound'))// При отсутствии подходящего id создает ошибку и кидает в блок catch
+  Card.findByIdAndRemove(req.params.cardId).orFail(next(new ForbiddenError(errorMessage.forbiddenError)))// При отсутствии подходящего id создает ошибку и кидает в блок catch
     .then((card) => {
       if (!card) {
         next(new NotFoundError(errorMessage.notFoundCard))
