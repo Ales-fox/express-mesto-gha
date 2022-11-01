@@ -14,8 +14,8 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  console.log(req);
-  User.findById(req.user._id).orFail(new NotFoundError(errorMessage.notFoundUser))
+  console.log(req.params);
+  User.findById(req.params.userId).orFail(new NotFoundError(errorMessage.notFoundUser))
     .populate('name')
     .then((user) => {
       if (!user) {
