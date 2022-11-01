@@ -3,7 +3,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const CastError = require('../errors/CastError');
 const ValidError = require('../errors/ValidError');
 const ForbiddenError = require('../errors/ForbiddenError');
-const errorMessage = require('../constants');
+const { errorMessage } = require('../constants');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})

@@ -5,7 +5,7 @@ const { celebrate, Joi, errors } = require('celebrate');
 const router = require('./routes/index');
 const {  login,  createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
-const errorMessage = require('./constants');
+const { errorMessage } = require('./constants');
 const NotFoundError = require('./errors/NotFoundError');
 
 const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;

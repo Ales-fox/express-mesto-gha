@@ -13,13 +13,13 @@ router.get('/', getUsers);
 
 router.get('/:userId',celebrate ({
   body: Joi.object().keys({
-    _id: Joi.string().required().id(),
+    _id: Joi.string().required().id().alphanum(),
   }).unknown(true),
 }), getUser);
 
 router.get('/me', celebrate ({
   body: Joi.object().keys({
-    _id: Joi.string().required().id(),
+    _id: Joi.string().required().id().alphanum(),
   }).unknown(true),
 }), getMyInfo);
 
