@@ -5,7 +5,7 @@ const { celebrate, Joi, errors } = require('celebrate');
 const router = require('./routes/index');
 const {  login,  createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
-const { errorMessage } = require('./constants');
+const { errorMessage, avatarPatternValidation } = require('./constants');
 const NotFoundError = require('./errors/NotFoundError');
 
 const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
@@ -22,20 +22,17 @@ app.use(express.json());
 app.post('/signin',celebrate ({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(7),
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+\.(ru|com)))(:\d{2,5})?((\/.+)+)?\/?#?/),
+    password: Joi.string().required(),
   }).unknown(true),
 }), login);
 
 app.post('/signup',celebrate ({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(7),
+    password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+\.(ru|com)))(:\d{2,5})?((\/.+)+)?\/?#?/), //url валидация ?
+    avatar: Joi.string().pattern(avatarPatternValidation),
   }).unknown(true),
 }), createUser);
 

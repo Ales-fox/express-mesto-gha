@@ -12,6 +12,9 @@ const cardSchema = new Schema({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: (data) => isURL(data), message: 'Incorrect URL-adress',
+    }
   },
   owner: {
     type: ObjectId,

@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const { avatarPatternValidation } = require('../constants');
 
 const {
   getUsers,
@@ -11,15 +12,11 @@ const {
 
 router.get('/', getUsers);
 
-router.get('/me', celebrate ({
-  body: Joi.object().keys({
-    _id: Joi.string().required().id().alphanum().pattern(/[a-f0-9]{24,24}/),
-  }).unknown(true),
-}), getMyInfo);
+router.get('/me', getMyInfo);
 
 router.get('/:userId',celebrate ({
   body: Joi.object().keys({
-    _id: Joi.string().required().id().alphanum().pattern(/[a-f0-9]{24,24}/),
+    _id: Joi.string().required().hex().length(24).pattern(/[a-f0-9]{24,24}/),
   }).unknown(true),
 }), getUser);
 
@@ -33,7 +30,7 @@ router.patch('/me',celebrate ({
 
 router.patch('/me/avatar',celebrate ({
   body: Joi.object().keys({
-    avatar: Joi.string().required().min(4).pattern(/(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+\.(ru|com)))(:\d{2,5})?((\/.+)+)?\/?#?/), //.regex() или RegExp ?
+    avatar: Joi.string().required().min(4).pattern(avatarPatternValidation), //.regex() или RegExp ?
   }).unknown(true),
 }), correctAvatar);
 
