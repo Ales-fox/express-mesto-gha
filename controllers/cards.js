@@ -14,20 +14,19 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId).orFail(new Error('NotFound'))// Если функция не находит элемент с таким id, то создает ошибку и кидает в блок catch
     .then((card) => {
       if (card.owner.toHexString() !== req.user._id) {
+        console.log('Нельзя удалить чужую карточку');
         next(new ForbiddenError(errorMessage.forbiddenError));
       }
+
+      Card.findByIdAndRemove(req.params.cardId)
+        .then((dataCard) => res.send({ dataCard }))
+        .catch((err) => {
+          next(err);
+        });
     })
     .catch((err) => {
       if (err.message === 'NotFound') {
-        return next(new NotFoundError(errorMessage.notFoundCard));
-      }
-      return next(err);
-    });
-
-  Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.message === 'NotFound') {
+        console.log('Такой карточки не существует');
         return next(new NotFoundError(errorMessage.notFoundCard));
       }
       if (err.name === 'CastError') {
