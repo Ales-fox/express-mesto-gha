@@ -17,16 +17,15 @@ module.exports.deleteCard = (req, res, next) => {
         next(new ForbiddenError(errorMessage.forbiddenError));
       }
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.message === 'NotFound') {
+        return next(new NotFoundError(errorMessage.notFoundCard));
+      }
+      return next(err);
+    });
 
   Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => {
-    /*
-    if (card.owner.toHexString()!==req.user._id) {
-        return next(new ForbiddenError(errorMessage.forbiddenError));
-      } */
-      res.send({ data: card });
-    })
+    .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.message === 'NotFound') {
         return next(new NotFoundError(errorMessage.notFoundCard));
