@@ -5,7 +5,6 @@ const ForbiddenError = require('../errors/ForbiddenError');
 const { errorMessage } = require('../constants');
 
 module.exports.getCards = (req, res, next) => {
-
   Card.find({})
     .then((cards) => res.send({ cards }))
     .catch(next);
@@ -13,28 +12,29 @@ module.exports.getCards = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId).orFail(new Error('NotFound'))// Если функция не находит элемент с таким id, то создает ошибку и кидает в блок catch
-  .then((card) => {
-    if (card.owner.toHexString()!==req.user._id) {
-      return next(new ForbiddenError(errorMessage.forbiddenError));
-    }
-  })
-  .catch(next);
+    .then((card) => {
+      if (card.owner.toHexString() !== req.user._id) {
+        next(new ForbiddenError(errorMessage.forbiddenError));
+      }
+    })
+    .catch(next);
 
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
-      /*
-      if (card.owner.toHexString()!==req.user._id) {
+    /*
+    if (card.owner.toHexString()!==req.user._id) {
         return next(new ForbiddenError(errorMessage.forbiddenError));
-      }*/
-      res.send({ data: card })})
+      } */
+      res.send({ data: card });
+    })
     .catch((err) => {
       if (err.message === 'NotFound') {
-       return next(new NotFoundError(errorMessage.notFoundCard));
+        return next(new NotFoundError(errorMessage.notFoundCard));
       }
       if (err.name === 'CastError') {
-       return next(new Error400(errorMessage.castError));
+        return next(new Error400(errorMessage.castError));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -47,7 +47,7 @@ module.exports.createCard = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new Error400(errorMessage.validationError));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -63,9 +63,9 @@ module.exports.putLike = (req, res, next) => {
         return next(new NotFoundError(errorMessage.notFoundCard));
       }
       if (err.name === 'CastError') {
-       return next(new Error400(errorMessage.castError));
+        return next(new Error400(errorMessage.castError));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -78,9 +78,9 @@ module.exports.deleteLike = (req, res, next) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.message === 'NotFound') {
-       next(new NotFoundError(errorMessage.notFoundCard));
+        next(new NotFoundError(errorMessage.notFoundCard));
       } else if (err.name === 'CastError') {
-       next(new Error400(errorMessage.castError));
+        next(new Error400(errorMessage.castError));
       } else {
         next(err);
       }

@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { celebrate, Joi, errors } = require('celebrate');
 const router = require('./routes/index');
-const {  login,  createUser } = require('./controllers/users');
+const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { errorMessage, avatarPatternValidation } = require('./constants');
 const NotFoundError = require('./errors/NotFoundError');
@@ -19,14 +19,14 @@ const app = express();
 // Можно подключить только к 1 конкретному запросу
 app.use(express.json());
 
-app.post('/signin',celebrate ({
+app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   }).unknown(true),
 }), login);
 
-app.post('/signup',celebrate ({
+app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
@@ -53,10 +53,11 @@ app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
 
   res.status(statusCode).send({
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message
-    });
+    message: statusCode === 500
+      ? 'На сервере произошла ошибка'
+      : message,
+  });
+  next();
 });
 
 app.listen(PORT, () => {

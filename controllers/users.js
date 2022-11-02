@@ -1,7 +1,7 @@
-const User = require('../models/user'); // Модуль для хеширования пароля
 const jwt = require('jsonwebtoken'); // Модуль для создания токенов
-const {errorMessage, SECRET_JWT} = require('../constants');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs'); // Модуль для хеширования пароля
+const User = require('../models/user');
+const { errorMessage, SECRET_JWT } = require('../constants');
 const NotFoundError = require('../errors/NotFoundError');
 const Error400 = require('../errors/Error400');
 const EmailExistError = require('../errors/EmailExistError');
@@ -18,12 +18,12 @@ module.exports.getUser = (req, res, next) => {
     .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.message === 'NotFound') {
-       return next(new NotFoundError(errorMessage.notFoundUser));
+        return next(new NotFoundError(errorMessage.notFoundUser));
       }
       if (err.name === 'CastError') {
         return next(new Error400(errorMessage.castError));
       }
-    next(err);
+      return next(err);
     });
 };
 
@@ -42,13 +42,19 @@ module.exports.getMyInfo = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  const { email, password, name, about, avatar  } = req.body;
+  const {
+    email, password, name, about, avatar,
+  } = req.body;
 
-  bcrypt.hash(password, 10) //Хэшируем пароль, 10 - длина "соли"
-    .then(hash => User.create({ email, password: hash, name, about, avatar  }))
+  bcrypt.hash(password, 10) // Хэшируем пароль, 10 - длина "соли"
+    .then((hash) => User.create({
+      email, password: hash, name, about, avatar,
+    }))
     .then((user) => {
-      const { name, about, avatar, email } = user;
-      res.status(200).send({ name, about, avatar, email })})
+      res.status(200).send({
+        name: user.name, about: user.about, avatar: user.avatar, email: user.email,
+      });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new Error400(errorMessage.validationError));
@@ -56,7 +62,7 @@ module.exports.createUser = (req, res, next) => {
       if (err.code === 11000) {
         return next(new EmailExistError(errorMessage.emailExistError));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -78,7 +84,7 @@ module.exports.correctUser = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new Error400(errorMessage.castError));
       }
-      next(err);
+      return next(err);
     });
 };
 
