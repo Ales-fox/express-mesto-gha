@@ -16,7 +16,7 @@ router.get('/me', getMyInfo);
 
 router.get('/:userId',celebrate ({
   body: Joi.object().keys({
-    _id: Joi.string().required().hex().length(24).pattern(/[a-f0-9]{24,24}/),
+    _id: Joi.string().required().hex().length(24).id().pattern(/[a-f0-9]{24,24}/),
   }).unknown(true),
 }), getUser);
 
@@ -30,7 +30,7 @@ router.patch('/me',celebrate ({
 
 router.patch('/me/avatar',celebrate ({
   body: Joi.object().keys({
-    avatar: Joi.string().required().min(4).pattern(avatarPatternValidation), //.regex() или RegExp ?
+    avatar: Joi.string().required().min(4).pattern(avatarPatternValidation),
   }).unknown(true),
 }), correctAvatar);
 
