@@ -16,15 +16,13 @@ router.get('/me', getMyInfo);
 
 router.get('/:userId', celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().required().hex().length(24)
-      .id()
-      .pattern(/[a-f0-9]{24,24}/),
+    userId: Joi.string().required().hex().length(24),
   }).unknown(true),
 }), getUser);
 
 router.patch('/me', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(40),
+    name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
   }).unknown(true),
 }), correctUser);

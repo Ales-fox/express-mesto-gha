@@ -13,12 +13,9 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  User.findById(req.params.userId).orFail(new Error('NotFound'))
+  User.findById(req.params.userId).orFail(new NotFoundError(errorMessage.notFoundUser))
     .then((user) => res.send({ user }))
     .catch((err) => {
-      if (err.message === 'NotFound') {
-        return next(new NotFoundError(errorMessage.notFoundUser));
-      }
       if (err.name === 'CastError') {
         return next(new Error400(errorMessage.castError));
       }
@@ -27,12 +24,10 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.getMyInfo = (req, res, next) => {
-  User.findById(req.user._id).orFail(new Error('NotFound'))
+  User.findById(req.user._id).orFail(new NotFoundError(errorMessage.notFoundUser))
     .then((myInfo) => res.send({ myInfo }))
     .catch((err) => {
-      if (err.message === 'NotFound') {
-        next(new NotFoundError(errorMessage.notFoundUser));
-      } else if (err.name === 'CastError') {
+      if (err.name === 'CastError') {
         next(new Error400(errorMessage.castError));
       } else {
         next(err);
@@ -71,14 +66,11 @@ module.exports.correctUser = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true, // данные будут валидированы перед изменением
-  }).orFail(new Error('NotFound'))
+  }).orFail(new NotFoundError(errorMessage.notFoundUser))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new Error400(errorMessage.validationError));
-      }
-      if (err.message === 'NotFound') {
-        return next(new NotFoundError(errorMessage.notFoundUser));
       }
       if (err.name === 'CastError') {
         return next(new Error400(errorMessage.castError));
@@ -93,12 +85,10 @@ module.exports.correctAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { avatar }, {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true, // данные будут валидированы перед изменением
-  }).orFail(new Error('NotFound'))
+  }).orFail(new NotFoundError(errorMessage.notFoundUser))
     .then((users) => res.send({ users }))
     .catch((err) => {
-      if (err.message === 'NotFound') {
-        next(new NotFoundError(errorMessage.notFoundUser));
-      } else if (err.name === 'CastError') {
+      if (err.name === 'CastError') {
         next(new Error400(errorMessage.castError));
       } else if (err.name === 'ValidationError') {
         next(new Error400(errorMessage.validationError));

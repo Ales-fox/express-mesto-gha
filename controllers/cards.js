@@ -11,24 +11,17 @@ module.exports.getCards = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findById(req.params.cardId).orFail(new Error('NotFound'))// Если функция не находит элемент с таким id, то создает ошибку и кидает в блок catch
+  // Если функция не находит эл-т с таким id, то метод orFail создает ошибку и кидает в блок catch
+  Card.findById(req.params.cardId).orFail(new NotFoundError(errorMessage.notFoundCard))
     .then((card) => {
       if (card.owner.toHexString() !== req.user._id) {
-        console.log('Нельзя удалить чужую карточку');
-        next(new ForbiddenError(errorMessage.forbiddenError));
+        throw new ForbiddenError(errorMessage.forbiddenError);
       }
 
-      Card.findByIdAndRemove(req.params.cardId)
-        .then((dataCard) => res.send({ dataCard }))
-        .catch((err) => {
-          next(err);
-        });
+      return Card.findByIdAndRemove(req.params.cardId);
     })
+    .then((dataCard) => res.send({ dataCard }))
     .catch((err) => {
-      if (err.message === 'NotFound') {
-        console.log('Такой карточки не существует');
-        return next(new NotFoundError(errorMessage.notFoundCard));
-      }
       if (err.name === 'CastError') {
         return next(new Error400(errorMessage.castError));
       }
@@ -54,12 +47,9 @@ module.exports.putLike = (req, res, next) => {
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавляет _id в массив, если его там нет
     { new: true },
-  ).orFail(new Error('NotFound'))
+  ).orFail(new NotFoundError(errorMessage.notFoundCard))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.message === 'NotFound') {
-        return next(new NotFoundError(errorMessage.notFoundCard));
-      }
       if (err.name === 'CastError') {
         return next(new Error400(errorMessage.castError));
       }
@@ -72,12 +62,10 @@ module.exports.deleteLike = (req, res, next) => {
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убирает _id из массива
     { new: true },
-  ).orFail(new Error('NotFound'))
+  ).orFail(new NotFoundError(errorMessage.notFoundCard))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.message === 'NotFound') {
-        next(new NotFoundError(errorMessage.notFoundCard));
-      } else if (err.name === 'CastError') {
+      if (err.name === 'CastError') {
         next(new Error400(errorMessage.castError));
       } else {
         next(err);
